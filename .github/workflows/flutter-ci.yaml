@@ -28,3 +28,7 @@ jobs:
         with:
           name: release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+      - name: Decode keystore
+        run: echo ${{ secrets.ANDROID_KEYSTORE }} | base64 -d > android/app/keystore.jks
+      - name: Build signed APK
+        run: flutter build apk --release --keystore android/app/keystore.jks
