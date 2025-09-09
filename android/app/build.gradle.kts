@@ -1,7 +1,6 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -28,17 +27,17 @@ android {
     }
 
     signingConfigs {
-        release {
-            storeFile file("keystore.jks")
-            storePassword "123456" // Replace with your password
-            keyAlias "key"
-            keyPassword "123456" // Replace with your key password, or use the same as storePassword if you pressed RETURN
+        create("release") {
+            storeFile = file("keystore.jks") // Relative to android/app/
+            storePassword = "123456" // Replace with your actual password
+            keyAlias = "key"
+            keyPassword = "123456" // Replace with your actual key password
         }
     }
 
     buildTypes {
         release {
-            signingConfig signingConfigs.release
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }

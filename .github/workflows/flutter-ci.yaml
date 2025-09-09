@@ -15,20 +15,22 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.35.3' # Or the latest stable version after upgrading
+          flutter-version: '3.35.3'
           channel: 'stable'
       - name: Install dependencies
         run: flutter pub get
       - name: Run tests
         run: flutter test
-      - name: Build APK
-        run: flutter build apk --release
+      - name: Decode keystore
+        run: echo ${{ secrets.ANDROID_KEYSTORE }} | base64 -d > android/app/keystore.jks
+      - name: Build signed APK
+        run: flutter build apk --release \
+          -Pandroid.injected.signing.store.file=android/app/keystore.jks \
+          -Pandroid.injected.signing.store.password=${{ secrets.KEYSTORE_PASSWORD }} \
+          -Pandroid.injected.signing.key.alias=key \
+          -Pandroid.injected.signing.key.password=${{ secrets.KEY_PASSWORD }}
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
-      - name: Decode keystore
-        run: echo ${{ secrets.ANDROID_KEYSTORE }} | base64 -d > android/app/keystore.jks
-      - name: Build signed APK
-        run: flutter build apk --release --keystore android/app/keystore.jks
